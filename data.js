@@ -2,7 +2,7 @@
    기준선 v1.0: 시드 20261024, 2025-11-01 ~ 2026-10-23. 시드·호출 순서를 바꾸면 모든 수치가 달라진다.
    의도한 변경 외에는 이 파일의 생성부를 수정하지 말 것. 구좌명·팀명·브랜드명·코드는 실제 명칭, 수치는 전부 가상. */
 'use strict';
-const APP={name:'모바일 편성 허브',tag:'편성 자원·실적·트래픽 일 단위 조회',version:'v3.0',build:'2026-10-24'};
+const APP={name:'모바일 편성 허브',tag:'편성 자원·실적·트래픽 일 단위 조회',version:'v3.1',build:'2026-10-24'};
 const META={baseDate:'2026-10-23',dataMin:'2025-11-01',dataMax:'2026-10-23',seed:20261024,dataKind:'가상 데이터',
   pipeline:'파이프라인 F44',redefine:'구좌명 재정의 260730',report:'25.09 리포트(8월 마감) 1~4번 시트 구성'};
 
@@ -143,31 +143,31 @@ const NEW_CODE={code:'home_newzone_x',name:'(raw 전시영역명) 홈_신규영�
 
 /* ---------- 구좌 지도 메타 (v2) ----------
    scr: 화면(home 홈 / tab 별도탭 / outlet 아울렛탭 / today 오늘혜택 / popup 팝업), h: 화면 안 세로 비중, img: img/ 폴더의 구좌 캡처(리포트 1번 시트 셀 메모 이미지).
-   desc: 구좌 설명. 순서는 SLOTS/AUTO_SLOTS의 seq(전시 순번)를 따른다. */
+   box: 캡처 안 구좌 영역 [왼쪽, 위, 너비, 높이] (%). desc: 구좌 설명. 순서는 SLOTS/AUTO_SLOTS의 seq(전시 순번)를 따른다. */
 const SCREENS=[['home','홈'],['tab','별도탭'],['outlet','아울렛탭'],['today','오늘혜택'],['popup','팝업']];
 const LAYOUT={
- home_banner_2:{scr:'home',h:1.3,img:'home_banner_2.jpg',desc:'홈 최상단, 메뉴 바로 아래 가로 띠 형태. 하루 1~3개 배너가 교대로 노출'},
- home_banner:{scr:'home',h:4,img:'home_banner.jpg',desc:'홈 상단 대형 롤링 배너. 편성 구좌 중 노출량이 가장 크고 배너 수가 많음'},
+ home_banner_2:{scr:'home',h:1.3,img:'home_banner_2.jpg',box:[1,9,98,10],desc:'홈 최상단, 메뉴 바로 아래 가로 띠 형태. 하루 1~3개 배너가 교대로 노출'},
+ home_banner:{scr:'home',h:4,img:'home_banner.jpg',box:[2,19,97,46],desc:'홈 상단 대형 롤링 배너. 편성 구좌 중 노출량이 가장 크고 배너 수가 많음'},
  home_onair:{scr:'home',h:2.4,desc:'현재 방송 중인 TV 상품. 시스템 자동 노출'},
  home_tvplus:{scr:'home',h:1.4,desc:'TV+ 방송 상품. 시스템 자동 노출'},
- home_eventicon:{scr:'home',h:1.5,img:'home_eventicon.jpg',desc:'원형 아이콘 메뉴 1번째 줄. 기획전·이벤트 진입 아이콘'},
- home_eventicon_2:{scr:'home',h:1.5,img:'home_eventicon_2.jpg',desc:'원형 아이콘 메뉴 2번째 줄'},
+ home_eventicon:{scr:'home',h:1.5,img:'home_eventicon.jpg',box:[1,26,98,15],desc:'원형 아이콘 메뉴 1번째 줄. 기획전·이벤트 진입 아이콘'},
+ home_eventicon_2:{scr:'home',h:1.5,img:'home_eventicon_2.jpg',box:[1,41,98,14],desc:'원형 아이콘 메뉴 2번째 줄'},
  home_show:{scr:'home',h:2,desc:'쇼핑라이브 방송 상품. 시스템 자동 노출'},
- home_mditem_not_auto:{scr:'home',h:2.6,img:'home_mditem_not_auto.jpg',desc:'MD가 직접 고른 혜택 상품 묶음. 상품 단위 편성'},
- home_timespecial_2:{scr:'home',h:1.8,img:'home_timespecial_2.jpg',desc:'하루 1개 상품 타임딜'},
- home_spex:{scr:'home',h:2,img:'home_spex.jpg',desc:'오늘의 대표 기획전 1건'},
- home_shorts:{scr:'home',h:2.4,img:'home_shorts.jpg',desc:'30초 숏폼 영상 묶음. 영상 단위 편성'},
+ home_mditem_not_auto:{scr:'home',h:2.6,img:'home_mditem_not_auto.jpg',box:[2,12,96,80],desc:'MD가 직접 고른 혜택 상품 묶음. 상품 단위 편성'},
+ home_timespecial_2:{scr:'home',h:1.8,img:'home_timespecial_2.jpg',box:[1,21,98,46],desc:'하루 1개 상품 타임딜'},
+ home_spex:{scr:'home',h:2,img:'home_spex.jpg',box:[1,12,98,52],desc:'오늘의 대표 기획전 1건'},
+ home_shorts:{scr:'home',h:2.4,img:'home_shorts.jpg',box:[1,11,97,72],desc:'30초 숏폼 영상 묶음. 영상 단위 편성'},
  home_pgm_new:{scr:'home',h:1.6,desc:'대표 프로그램 커뮤니티. 시스템 자동 노출'},
- home_spex_3:{scr:'home',h:2,img:'home_spex_3.jpg',desc:'주목 기획전 묶음(가로 스크롤)'},
- home_brand:{scr:'home',h:2,img:'home_brand.jpg',desc:'월간 신상품 브랜드 묶음'},
- home_ad:{scr:'home',h:2,img:'home_ad.jpg',desc:'추천 상품 1건'},
- home_themeSpex:{scr:'home',h:2,img:'home_themeSpex.jpg',desc:'단독 브랜드 기획전 묶음'},
- home_spex_2:{scr:'home',h:2,img:'home_spex_2.jpg',desc:'MD 제안 기획전 묶음'},
+ home_spex_3:{scr:'home',h:2,img:'home_spex_3.jpg',box:[1,19,98,69],desc:'주목 기획전 묶음(가로 스크롤)'},
+ home_brand:{scr:'home',h:2,img:'home_brand.jpg',box:[1,11,98,43],desc:'월간 신상품 브랜드 묶음'},
+ home_ad:{scr:'home',h:2,img:'home_ad.jpg',box:[3,58,94,34],desc:'추천 상품 1건'},
+ home_themeSpex:{scr:'home',h:2,img:'home_themeSpex.jpg',box:[2,11,96,51],desc:'단독 브랜드 기획전 묶음'},
+ home_spex_2:{scr:'home',h:2,img:'home_spex_2.jpg',box:[1,18,98,68],desc:'MD 제안 기획전 묶음'},
  home_mditem_auto:{scr:'home',h:2.4,desc:'인기 급상승 상품. 시스템 자동 노출'},
  home_cateBest:{scr:'home',h:2.4,desc:'주문 집중 TV 상품. 시스템 자동 노출'},
- ad_mbl_main_pop:{scr:'popup',h:6,img:'ad_mbl_main_pop.jpg',desc:'앱 진입 시 홈 위에 뜨는 팝업. 하루 1~3건'},
- I_tab:{scr:'tab',h:9,img:'I_tab.jpg',desc:'홈 상단 메뉴에 붙는 브랜드 단독 탭. 탭 전체가 한 브랜드 행사'},
- '30_현대아울렛':{scr:'outlet',h:9,img:'outlet_tab.jpg',desc:'현대아울렛 탭. 탭 전체가 아울렛 행사'},
- today_benefit:{scr:'today',h:9,img:'today_benefit.jpg',desc:'하단 메뉴 오늘혜택. 하루 1건 혜택 행사'}
+ ad_mbl_main_pop:{scr:'popup',h:6,img:'ad_mbl_main_pop.jpg',box:[17,49,68,43],desc:'앱 진입 시 홈 위에 뜨는 팝업. 하루 1~3건'},
+ I_tab:{scr:'tab',h:9,img:'I_tab.jpg',box:[27,9,18,9],desc:'홈 상단 메뉴에 붙는 브랜드 단독 탭. 탭 전체가 한 브랜드 행사'},
+ '30_현대아울렛':{scr:'outlet',h:9,img:'outlet_tab.jpg',box:[37,11,23,7],desc:'현대아울렛 탭. 탭 전체가 아울렛 행사'},
+ today_benefit:{scr:'today',h:9,img:'today_benefit.jpg',box:[37,85,25,10],desc:'하단 메뉴 오늘혜택. 하루 1건 혜택 행사'}
 };
 const BRAND_LIST=[...new Set(BANNERS.map(b=>b.brand))].sort((a,b)=>a.localeCompare(b,'ko'));

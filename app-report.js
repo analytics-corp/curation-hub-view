@@ -47,6 +47,7 @@ function init(){
   on('fQ','input',e=>{state.q=e.target.value.slice(0,40);state.limit=50;render();});
   on('fReset','click',resetFilters);on('eReset','click',resetFilters);on('btnCopy','click',copyLink);on('btnTheme','click',toggleTheme);
   on('eMore','click',()=>{state.limit+=50;render();});
+  const dt=document.getElementById('dimToggle');if(dt){dt.checked=dimOn();dt.addEventListener('change',()=>{try{localStorage.setItem('hubDim',dt.checked?'1':'0');}catch(e){}const ps=document.getElementById('phoneShot');if(ps)ps.classList.toggle('nodim',!dt.checked);});}
   document.addEventListener('click',e=>{const t=e.target;if(!(t instanceof Element))return;
     const pr=t.closest('[data-preset]');if(pr){applyPreset(pr.dataset.preset);render();return;}
     const cl=t.closest('[data-clear]');if(cl){state[cl.dataset.clear]='';render();return;}

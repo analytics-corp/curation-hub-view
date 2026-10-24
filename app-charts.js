@@ -65,15 +65,6 @@ function dumbbell(box,rows,fmtV){
   box.appendChild(s);
 }
 
-/* 앱 화면 위치: 화면(scr)에 속한 구좌를 전시 순번대로 블록으로 그린다. values: Map(code -> {v,text,rank}) */
+/* 화면(scr)에 속한 구좌를 전시 순번대로 나열한다 (구좌 글자표·화면별 구좌 수에 사용) */
 function slotsOf(scr){const all=SLOTS.map(s=>({s,auto:false})).concat(AUTO_SLOTS.map(s=>({s,auto:true})));
   return all.filter(x=>(LAYOUT[x.s.code]||{}).scr===scr).sort((a,b)=>(+a.s.seq||0)-(+b.s.seq||0));}
-function renderPhone(box,scr,values,pick,mini){
-  const nav=SCREENS.map(([k,n])=>`<span class="${k===scr?'on':''}">${n}</span>`).join('');
-  const ranked=[...values.values()].filter(x=>x.rank!=null);const n=ranked.length||1;
-  const blocks=slotsOf(scr).map(({s,auto})=>{const m=LAYOUT[s.code]||{h:2};const val=values.get(s.code);
-    if(auto)return `<div class="blk auto" style="--h:${m.h}" title="${esc(s.name)} · 자동노출"><span class="n">${esc(s.name)}</span><span class="v">자동노출</span></div>`;
-    const t=val&&val.rank!=null?1-val.rank/Math.max(1,n-1):0;const c=heat(t);
-    return `<div class="blk${c.ink?' ink':''}${s.code===pick?' sel':''}${scr==='popup'?' pop':''}" style="--h:${m.h};background:${c.bg}" data-pick="${esc(s.code)}" tabindex="0" role="button" title="${esc(s.name)}"><span class="q">${val&&val.rank!=null?val.rank+1+'위':''}</span><span class="n">${esc(s.name)}</span><span class="v">${val?esc(val.text):''}</span></div>`;}).join('');
-  box.innerHTML=(mini?'':`<div class="pbar"><span>9:41</span><span>LTE 100%</span></div>`)+`<div class="pnav">${nav}</div><div class="pbody">${blocks||'<div class="muted" style="padding:20px;font-size:12px">이 화면에는 편성 구좌가 없습니다</div>'}</div>`;
-}
