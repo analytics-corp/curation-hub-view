@@ -1,143 +1,171 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>모바일 편성 허브</title>
-<meta name="description" content="모바일 편성 구좌의 자원·실적·트래픽을 앱 화면 순서대로 매일 보는 화면">
+<meta name="description" content="편성 자원·실적·트래픽을 일 단위로 조회하는 모바일 편성 허브 컨셉 화면 (가상 데이터)">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles-slot.css">
 </head>
 <body>
 <noscript><div style="padding:24px">이 화면은 JavaScript가 켜져 있어야 표시됩니다.</div></noscript>
-<header class="top">
-  <div class="wrap">
-    <div class="brand"><span class="mark">H</span><div><b>모바일 편성 허브</b><small id="hdrBase"></small></div></div>
-    <nav class="tabs" id="tabs" aria-label="화면">
-      <button type="button" data-view="brief">브리핑</button>
-      <button type="button" data-view="map">구좌 지도</button>
-      <button type="button" data-view="team">영업팀</button>
-      <button type="button" data-view="event">전시 행사</button>
-      <button type="button" data-view="report">데일리 리포트</button>
-      <button type="button" data-view="guide">기준</button>
-    </nav>
-    <div class="actions"><button type="button" class="btn" id="btnCopy" title="지금 보는 화면과 조회 조건이 담긴 링크를 복사합니다">링크 복사</button></div>
+<div class="app">
+<aside class="nav">
+  <div class="brand"><span id="appName">모바일 편성 허브</span><small id="appTag">편성 자원·실적·트래픽 일 단위 조회</small></div>
+  <span class="badge" id="appBadge">가상 데이터</span>
+  <button type="button" data-view="home" aria-current="page">편성 요약</button>
+  <button type="button" data-view="slot">구좌별 현황</button>
+  <button type="button" data-view="team">영업팀별 현황</button>
+  <button type="button" data-view="event">전시 행사별 현황</button>
+  <button type="button" data-view="daily">편성 데일리 리포트</button>
+  <button type="button" data-view="guide">기준 안내</button>
+  <div class="spacer"></div>
+  <div class="foot" id="appFoot"></div>
+</aside>
+<main>
+  <div class="head">
+    <div><h1 id="pageTitle">편성 요약</h1><div class="sub" id="pageSub"></div><div class="chips" id="chips"></div></div>
+    <div class="actions"><button type="button" class="btn" id="btnCopy" title="지금 보는 화면과 조회 조건이 담긴 링크를 복사합니다">링크 복사</button><button type="button" class="btn primary" id="btnTheme">다크/라이트</button></div>
   </div>
-</header>
-<section class="cond" id="cond">
-  <div class="wrap">
-    <div class="f period"><span class="lbl">조회 기간 (접수일자)</span>
-      <div class="row"><input type="date" id="fFrom"><span class="tilde">~</span><input type="date" id="fTo"><div class="presets" id="presets"></div></div></div>
-    <div class="f"><span class="lbl">팀</span><input type="text" id="fTeam" list="dlTeam" placeholder="전체 · 팀명 검색" autocomplete="off"><datalist id="dlTeam"></datalist></div>
-    <div class="f"><span class="lbl">MD</span><input type="text" id="fMD" list="dlMD" placeholder="전체 · 코드·팀·분류 검색" autocomplete="off"><datalist id="dlMD"></datalist></div>
-    <div class="f"><span class="lbl">브랜드</span><input type="text" id="fBrand" list="dlBrand" placeholder="전체 · 브랜드명 검색" autocomplete="off"><datalist id="dlBrand"></datalist></div>
-    <div class="f"><span class="lbl">편성 구좌</span><select id="fSlot"><option value="">전체</option></select></div>
-    <div class="f end"><button type="button" class="btn ghost" id="fReset">초기화</button></div>
+  <div class="filters" id="filters">
+    <div class="f period"><span class="lbl">조회 기간 (시작일 ~ 종료일)</span><div class="row"><input type="date" id="fFrom"><span class="tilde">~</span><input type="date" id="fTo"><div class="presets" id="presets"></div></div></div>
+    <label>팀<input type="text" id="fTeam" list="dlTeam" placeholder="전체 · 팀명 검색" autocomplete="off"><datalist id="dlTeam"></datalist></label>
+    <label>MD<input type="text" id="fMD" list="dlMD" placeholder="전체 · 코드 검색" autocomplete="off"><datalist id="dlMD"></datalist></label>
+    <label>브랜드<input type="text" id="fBrand" list="dlBrand" placeholder="전체 · 브랜드명 검색" autocomplete="off"><datalist id="dlBrand"></datalist></label>
+    <label>편성 구좌<select id="fSlot"><option value="">전체</option></select></label>
+    <label>행사 검색<input type="search" id="fQ" placeholder="전시명 · 브랜드 · MD코드" maxlength="40"></label>
+    <button type="button" class="btn" id="fReset">초기화</button>
   </div>
-  <div class="wrap chips" id="chips"></div>
-</section>
-<main class="wrap">
-  <div class="vh"><div><h1 id="pageTitle"></h1><div class="sub" id="pageSub"></div></div></div>
 
-  <section class="view" id="view-brief">
-    <div class="hero"><div class="lead" id="hero"></div><div class="notes" id="notes"></div></div>
+  <!-- 편성 요약 -->
+  <section class="view" id="view-home">
     <div class="kpis" id="kpis"></div>
-    <div class="g2">
-      <div class="card"><div class="ch"><h2>구좌 지도 요약</h2><span class="hint">홈 화면 순서 · 색이 짙을수록 구좌 발생 매출 순위가 높음 · 누르면 구좌 지도로</span></div><div class="minimap" id="minimap"></div></div>
-      <div class="card chart"><div class="ch"><h2 id="trendTitle">일별 추이</h2><span class="hint">편성 구좌 발생 매출</span></div><div id="trend"></div></div>
+    <div class="section-title"><h2>3종 정보</h2><span class="hint">편성 자원 · 실적 · 모바일 편성에서 발생한 트래픽. 종합 평가 산식은 설계 전이라 수치를 병기합니다.</span></div>
+    <div class="grid3" id="infoCards"></div>
+    <div class="section-title"><h2>편성 구좌별 구좌 발생 매출</h2><span class="hint">굵은 막대 = 선택 기간, 가는 막대 = 비교 기간 · 구좌를 누르면 구좌별 현황으로 이동</span></div>
+    <div class="grid2">
+      <div class="card"><h3>구좌 발생 매출과 가중치</h3><div class="desc">가중치 내림차순 · 자동노출 영역은 제외</div><div class="scrolly"><div class="hbars" id="slotBars"></div></div><div class="legend"><span><i></i>선택 기간</span><span><i class="prev"></i>비교 기간</span></div></div>
+      <div class="card"><h3>영업팀 TOP 10</h3><div class="desc">편성 구좌 발생 매출 기준 · 그룹은 선택 기간의 평균선으로 분류 · 팀을 누르면 해당 팀 행사 목록</div><div class="tw scrolly"><table class="data" id="teamTop"></table></div></div>
     </div>
-    <div class="g4" id="best"></div>
-    <div class="card" id="flagBrief"></div>
+    <div class="section-title"><h2 id="trendTitle">일별 추이</h2><span class="hint">기간이 길면 주·월 단위로 묶입니다</span></div>
+    <div class="trends" id="trends"></div>
+    <div class="section-title"><h2>사업부별 현황</h2><span class="hint">팀 집계를 사업부로 묶은 값 · 편성 1%당 매출 = 매출 ÷ (운영 비중 × 100)</span></div>
+    <div class="card"><div class="tw"><table class="data" id="buTable"></table></div></div>
+    <div class="section-title"><h2>BEST 5</h2><span class="hint">선택 기간과 하루라도 겹치는 행사의 구좌 유입 실적 기준</span></div>
+    <div class="grid4" id="best"></div>
   </section>
 
-  <section class="view" id="view-map" hidden>
-    <div class="maplay">
-      <div class="card">
-        <div class="ch"><h2>구좌 지도</h2><div class="seg" id="metricSeg"></div></div>
-        <div class="screens" id="screens"></div>
-        <div class="phone"><div class="pnotch"></div><div class="pscreen" id="phone"></div></div>
-        <div class="heatlegend" id="heatLegend"></div>
-      </div>
-      <div class="card detail" id="slotDetail"></div>
+  <!-- 구좌별 현황 -->
+  <section class="view" id="view-slot" hidden>
+    <div class="section-title"><h2>구좌 카드</h2><span class="hint">카드 순서는 선택한 지표의 순위 · 캡처는 25.09 리포트 1번 시트 셀 메모의 앱 화면</span></div>
+    <div class="card"><div class="tools"><div class="seg" id="metricSeg"></div><div class="screens" id="screens"></div></div><div class="gallery" id="gallery"></div></div>
+    <div class="card detail" id="slotDetail"></div>
+    <div class="section-title"><h2>편성 구좌별 효율</h2><span class="hint">리포트 1번 시트 구성 · 단위: 원, 건 · 일평균은 선택 기간 일수로 나눈 값 · 농도는 값 크기</span></div>
+    <div class="card"><div class="tw"><table class="data" id="slotTable"></table></div>
+      <div class="note">편성 구분 "모바일전략"은 모바일전략팀이 편성하는 구좌이고, "자동노출"은 시스템이 자동으로 채우는 영역이라 가중치 산정에서 제외합니다. 가중치 = 구좌 발생 매출 비중 50% + 클릭수 비중 50%, 구좌 매출 비중 = 구좌 발생 매출 ÷ 전체 실적.</div></div>
+    <div class="grid2">
+      <div class="card"><h3>구좌별 가중치</h3><div class="desc">굵은 막대 = 선택 기간, 가는 막대 = 비교 기간</div><div class="scrolly"><div class="hbars" id="weightBars"></div></div></div>
+      <div class="card"><h3>주요 탭 PV (일평균)</h3><div class="desc">모바일 편성에서 발생한 트래픽 · 최근 6개월 월별 + 선택 기간</div><div class="tw scrolly"><table class="data" id="pvTable"></table></div></div>
     </div>
-    <div class="card" style="margin-top:12px"><div class="ch"><h2>구좌별 효율 표</h2><span class="hint">리포트 1번 시트 구성 · 일평균은 조회 기간 일수로 나눈 값 · 행을 누르면 지도에서 선택</span></div><div class="tw"><table class="data" id="slotTable"></table></div>
-      <div class="note">편성 구분 "모바일전략"은 모바일전략팀이 편성하는 구좌, "자동노출"은 시스템이 채우는 영역이라 가중치 산정에서 제외합니다. 가중치 = 구좌 발생 매출 비중 50% + 클릭수 비중 50%, 구좌 매출 비중 = 구좌 발생 매출 ÷ 전체 실적.</div></div>
   </section>
 
+  <!-- 영업팀별 현황 -->
   <section class="view" id="view-team" hidden>
-    <div class="g2">
-      <div class="card chart"><div class="ch"><h2>자원 대비 성과</h2><span class="hint">팀별 편성 사용량 비중(회색)과 매출 비중(파랑) · 매출 비중이 더 크면 쓴 것보다 많이 번 팀</span></div><div id="dumbbell"></div><div class="legend"><span><i class="prev"></i>편성 사용량 비중 (가중치 반영)</span><span><i></i>매출 비중</span></div></div>
-      <div class="card"><div class="ch"><h2>효율 그룹</h2><span class="hint" id="groupMeta"></span></div><div class="gcards" id="groupCards" style="grid-template-columns:1fr 1fr;margin-top:0"></div>
+    <div class="section-title"><h2>편성 자원 대비 매출</h2><span class="hint">팀별 편성 사용량 비중(회색)과 매출 비중(보라) · 매출 비중이 더 크면 쓴 것보다 많이 번 팀</span></div>
+    <div class="grid2">
+      <div class="card chart"><div id="dumbbell"></div><div class="legend"><span><i class="prev"></i>편성 사용량 비중 (가중치 반영)</span><span><i></i>매출 비중</span></div></div>
+      <div class="card"><h3>효율 그룹</h3><div class="desc" id="groupMeta"></div><div class="grid4" id="groupCards" style="grid-template-columns:1fr 1fr"></div>
         <div class="note">그룹 규칙(Ver.12): 편성 구좌 발생 매출이 활동 팀 평균 이상이면 1·2그룹, 미만이면 3·4그룹. 편성 사용량이 평균 이하이면 1·3그룹, 초과면 2·4그룹. 편성이 없는 팀은 분류하지 않습니다.</div></div>
     </div>
-    <div class="card" style="margin-top:12px"><div class="ch"><h2>영업팀별 모바일 편성 구좌 유입 현황</h2><span class="hint">팀 행을 누르면 그 팀으로 조회 조건이 바뀝니다 · 편성 1%당 매출 = 매출 ÷ (운영 비중 × 100)</span></div><div class="tw"><table class="data" id="teamTable"></table></div></div>
+    <div class="section-title"><h2>영업팀별 모바일 편성 구좌 유입 현황</h2><span class="hint">팀을 누르면 해당 팀 행사 목록 · 편성 1%당 매출 = 매출 ÷ (운영 비중 × 100)</span></div>
+    <div class="card"><div class="tw"><table class="data" id="teamTable"></table></div>
+      <div class="note">편성 운영 (가중치) = Σ 편성 건수 × (1 + 해당 구좌 가중치). 비교 기간은 직전 같은 길이 구간입니다.</div></div>
   </section>
 
+  <!-- 전시 행사별 현황 -->
   <section class="view" id="view-event" hidden>
-    <div class="g2" id="eventTop"></div>
-    <section class="card empty" id="eEmpty" hidden><h3>선택한 조건에 해당하는 행사가 없습니다</h3><p>기간·팀·MD·브랜드·구좌를 함께 좁히면 행사가 없을 수 있습니다.</p><button type="button" class="btn primary" id="eReset">조회 조건 초기화</button></section>
-    <div class="card" id="eventListCard" style="margin-top:12px" hidden><div class="ch"><h2>행사 전체 목록</h2><span class="hint">열 제목을 누르면 정렬 · 조회 기간과 하루라도 겹치는 행사 · 전체 실적은 같은 상품의 구좌 무관 실적</span></div>
+    <div class="grid2" id="eventTop"></div>
+    <section class="card empty" id="eEmpty" hidden><h3>선택한 조건에 해당하는 행사가 없습니다</h3><p>기간·팀·MD·브랜드·구좌·검색어를 함께 좁히면 행사가 없을 수 있습니다.</p><button type="button" class="btn primary" id="eReset">조회 조건 초기화</button></section>
+    <div class="card" id="eventListCard" hidden><h3>행사 전체 목록</h3><div class="desc">열 제목을 누르면 정렬 · 선택 기간과 하루라도 겹치는 행사 · 전체 실적은 같은 상품의 구좌 무관 실적</div>
       <div class="tablebar"><span class="count" id="eCount"></span></div><div class="tw"><table class="data" id="eventTable"></table></div><button type="button" class="btn more" id="eMore" hidden>50건 더</button></div>
-    <div class="card" id="mdListCard" style="margin-top:12px" hidden><div class="ch"><h2>MD 전체 목록</h2><span class="hint">MD코드 기준 · 이름은 표시하지 않습니다 · 코드를 누르면 그 MD로 조회</span></div><div class="tw"><table class="data" id="mdTable"></table></div></div>
+    <div class="card" id="mdListCard" hidden><h3>MD 전체 목록</h3><div class="desc">MD코드 기준 · 이름은 표시하지 않습니다 · 코드를 누르면 그 MD로 조회</div><div class="tw"><table class="data" id="mdTable"></table></div></div>
   </section>
 
-  <section class="view" id="view-report" hidden>
+  <!-- 편성 데일리 리포트 -->
+  <section class="view" id="view-daily" hidden>
     <div class="card" id="dailyHead"></div>
-    <div class="stack">
-      <div class="card"><div class="ch"><h2>3종 정보 변동</h2><span class="hint">기준일 vs 전일 vs 전주 동요일</span></div><div class="tw"><table class="data" id="dailyTable"></table></div></div>
-      <div class="card draft" id="draft"></div>
-    </div>
-    <div class="card" style="margin-top:12px"><div class="ch"><h2>검증 플래그와 원인 분류</h2><span class="hint">규칙 검사에서 걸린 항목과 원인 분류 · 신뢰도가 낮으면 담당자 확인으로 넘김</span></div><div class="tw"><table class="data" id="flagTable"></table></div></div>
-    <div class="ch" style="margin-top:16px"><h2>일일 운영 사이클</h2><span class="hint">치명 플래그가 나오면 이후 단계를 멈춥니다</span></div>
-    <div class="steps" id="cycle" style="margin-top:0"></div>
+    <div class="section-title"><h2>3종 정보 변동</h2><span class="hint">기준일 vs 전일 vs 전주 동요일 · 코드 산출값만 인용</span></div>
+    <div class="card"><div class="tw"><table class="data" id="dailyTable"></table></div></div>
+    <div class="section-title"><h2>구좌별 전일 대비</h2><span class="hint">변동 폭이 큰 순 · 구좌를 누르면 구좌별 현황으로 이동</span></div>
+    <div class="card"><div class="tw"><table class="data" id="slotDelta"></table></div></div>
+    <div class="section-title"><h2>리포트 초안</h2><span class="hint">승인 후 공유 채널로 발송</span></div>
+    <div class="card draft" id="draft"></div>
+    <div class="section-title"><h2>일일 운영 사이클</h2><span class="hint">매일 1회, 전일 마감 데이터 기준</span></div>
+    <div class="steps" id="cycle"></div>
   </section>
 
+  <!-- 기준 안내 -->
   <section class="view guide" id="view-guide" hidden>
-    <div class="card"><div class="ch"><h2>지표 정의</h2></div><dl>
+    <div class="section-title"><h2>지표 정의</h2></div>
+    <div class="card"><dl>
       <dt>구좌 발생 매출</dt><dd>고객이 편성 구좌(전시영역코드)를 통해 접근해 바로 구매하거나 장바구니를 거쳐 구매한 실적. 판매상품코드·매장ID 타겟을 모두 조회합니다.</dd>
-      <dt>전체 실적</dt><dd>같은 상품코드의 구좌 구분 없는 전체 실적. 간접 실적 = 전체 − 구좌 발생. 배너 단위 값이 일자 행마다 반복되므로 중복 제거 후 집계합니다.</dd>
+      <dt>전체 실적</dt><dd>같은 상품코드의 구좌 구분 없는 전체 실적. 간접 실적 = 전체 − 구좌 발생. 배너 단위 값이 일자 행마다 반복되므로 직접 합산하지 않고 중복 제거 후 집계합니다.</dd>
       <dt>구좌 매출 비중</dt><dd>구좌 발생 매출 ÷ 전체 실적.</dd>
-      <dt>구좌 가중치</dt><dd>구좌 발생 매출 비중 50% + 클릭수 비중 50%. 모바일전략 편성 구좌 17개 안에서 계산하며 자동노출 영역은 제외합니다.</dd>
+      <dt>구좌 가중치</dt><dd>구좌 발생 매출 비중 50% + 클릭수 비중 50%. 모바일전략 편성 구좌 17개 안에서 비중을 계산하며 자동노출 영역은 제외합니다.</dd>
       <dt>편성 사용량</dt><dd>팀이 사용한 편성 구좌 자원. 실제 건수와 가중치 반영 건수(Σ 건수 × (1 + 구좌 가중치))를 함께 표시하고, 비중은 가중치 반영 건수 기준입니다.</dd>
       <dt>편성 1%당 매출</dt><dd>매출 ÷ (편성 운영 비중 × 100). 전사 평균 比는 팀별 평균과의 차이입니다.</dd>
       <dt>효율 그룹</dt><dd>편성 사용량과 편성 구좌 발생 매출을 활동 팀 평균선으로 나눈 2×2 분류. 1그룹 고효율, 2그룹 준효율, 3그룹 비활성, 4그룹 저효율.</dd>
-      <dt>재구매율</dt><dd>같은 구좌를 통해 재방문·재구매한 비율. 이 화면에서는 구좌별 고정값입니다.</dd>
-      <dt>클릭수 · DAU · PV</dt><dd>모바일 편성에서 발생한 트래픽. 클릭은 구좌 단위, PV는 주요 탭 단위로 집계합니다.</dd>
-      <dt>조회 기간</dt><dd>시작일~종료일(접수일자 기준, 2025-11-01 ~ 2026-10-23). 빠른 선택은 전일·7일·30일·이번 달·전월. 브리핑의 증감은 직전 같은 길이 기간과 자동 비교합니다.</dd>
+      <dt>재구매율</dt><dd>같은 구좌를 통해 재방문·재구매한 비율. 이 화면에서는 구좌별 고정값(가상)입니다.</dd>
+      <dt>클릭수 · DAU · PV</dt><dd>모바일 편성에서 발생한 트래픽. 클릭은 구좌 단위, PV는 주요 탭 단위로 집계합니다. 값이 비어 있는 구좌는 "결측"으로 표시합니다.</dd>
+      <dt>조회 기간</dt><dd>시작일~종료일을 직접 고르거나 빠른 선택(전일·최근 7일·최근 30일·이번 달·전월·연초 누계)을 씁니다. 증감은 직전 같은 길이 구간과 비교하고, 데이터 범위를 벗어나면 "(일부)"로 표시합니다.</dd>
       <dt>날짜 기준</dt><dd>추출은 접수일자, 배너 귀속은 주문일자 ≥ 전시시작일 하한 가드(F44). 취소 행은 주문번호 + 판매상품코드 + 매장ID로 전시영역코드를 복원합니다. 노출 기간 이전 주문의 취소가 기간 중 처리되면 전체 실적이 음수가 될 수 있습니다.</dd>
-      <dt>검증 플래그</dt><dd>스키마·규모·중복·부호·코드 복원·신규 코드·그룹 변동·트래픽 결측·급변·결합 실패 검사. 이 화면은 그중 5종을 예시합니다.</dd>
+    </dl><div class="note">이 화면은 가상 데이터로 만든 컨셉 목업입니다. 구좌명·팀명·브랜드명·코드는 실제 명칭을 쓰고, 실적·트래픽 등 모든 수치는 시드 고정 난수로 생성했습니다. 실제 수치가 아닙니다.</div></div>
+    <div class="section-title"><h2>허브 구성과 데이터 흐름</h2></div>
+    <div class="card"><dl>
+      <dt>허브 · 엔진 · 체계</dt><dd>모바일 편성 허브(비전) → 모바일 편성 자원·성과 관리 에이전트(허브를 매일 운영하는 엔진) → 모바일 편성 효율 관리 체계(월 단위 리포트). 산출물은 편성 데일리 리포트입니다.</dd>
+      <dt>5개 모듈</dt><dd>1 효율 관리 체계 · 2 자원·성과 관리(월 → 일 전환) · 3 데일리 리포트 · 4 데이터 기반 예측 · 5 동업계 편성 비교.</dd>
+      <dt>계층</dt><dd>L1 데이터(SQL·Python 코드) → L2 규칙 검증(코드) → L3 에이전트(변동 요약·초안) → L4 운영(스케줄·승인·알림) → L5 전달(메신저·메일·공유 폴더).</dd>
+      <dt>원천</dt><dd>일별 주문 단위 CSV(파라미터 전체일별 F2 계열) + 전시 배너 마스터(Stage1 Ver.20) + 구좌명 재정의(260730, 99건) + 트래픽 원천.</dd>
+      <dt>소급 변동</dt><dd>취소가 접수일자 기준으로 뒤늦게 반영되므로 직전 N일을 매일 다시 계산하고, 바뀐 구간은 "수정 반영"으로 표시합니다.</dd>
     </dl></div>
-    <div class="card" style="margin-top:12px"><div class="ch"><h2>화면 구성 근거</h2></div><dl>
-      <dt>구좌 지도</dt><dd>앱 화면 캡처 위에 광고 구좌를 표시하는 Hmall 광고 구좌 안내 페이지의 방식을 가져와, 홈·별도탭·아울렛탭·오늘혜택·팝업 화면의 구좌 배치를 전시 순번대로 놓고 성과를 색으로 입혔습니다. 구좌 캡처는 월간 리포트 1번 시트의 셀 메모 이미지입니다.</dd>
-      <dt>브리핑 · 표</dt><dd>사내 Power BI 보고서(모바일 요약·일별·월 추세, 쇼핑라이브 실적)의 읽기 습관을 따랐습니다. 조회 기간은 시작일·종료일, 상위 5개(BEST 5) 목록, 증감·신장률 병기, 표의 값 농도 표시.</dd>
-      <dt>영업팀</dt><dd>산점도 대신 팀마다 "쓴 비중"과 "번 비중"을 한 줄에 나란히 놓는 덤벨 차트를 씁니다. 두 점의 거리가 효율이고, 4그룹 분류는 같은 규칙으로 따로 표시합니다.</dd>
-      <dt>색 · 차트 규칙</dt><dd>크기는 파랑 한 계열의 농도로, 증감은 초록·빨강 상태색으로만 표시합니다. 막대는 얇게, 격자는 가는 실선, 값은 끝점과 상위 항목에만 직접 표기하고 나머지는 표와 툴팁이 맡습니다. 두 개의 세로축을 한 차트에 겹치지 않습니다.</dd>
+    <div class="section-title"><h2>화면 구성 근거</h2></div>
+    <div class="card"><dl>
+      <dt>편성 요약</dt><dd>사내 Power BI 보고서(모바일 요약·일별·주 추세, 쇼핑라이브 실적)의 읽기 습관을 따릅니다. 조회 기간은 시작일·종료일, 상위 5개(BEST 5) 목록, 증감 병기, 표 안의 값은 농도로 표시.</dd>
+      <dt>구좌별 현황</dt><dd>Hmall 광고 구좌 안내 페이지처럼 구좌를 실제 앱 화면 캡처로 보여 주고 성과를 붙입니다. 카드 갤러리에서 고르면 상세(캡처·설명·지표·추이·행사·팀)가 열리고, 아래 표는 리포트 1번 시트 구성을 그대로 둡니다.</dd>
+      <dt>영업팀별 현황</dt><dd>산점도 대신 팀마다 "쓴 비중"과 "번 비중"을 한 줄에 나란히 놓는 덤벨 차트를 씁니다. 4그룹 분류 규칙은 시각화 차트(Ver.12)와 같습니다.</dd>
+      <dt>색 · 차트 규칙</dt><dd>크기는 한 색 계열의 농도로, 증감은 초록·빨강 상태색으로만 표시합니다. 막대는 얇게, 격자는 가는 실선, 값은 끝점과 상위 항목에만 직접 표기하고 나머지는 표와 툴팁이 맡습니다. 두 개의 세로축을 한 차트에 겹치지 않습니다.</dd>
       <dt>참고</dt><dd>Hmall 광고 구좌 안내(hmall-ad-map), 광고 성과 센터(adcenter-view)의 조회 조건, 홈쇼핑 편성 모니터링(hdhs)의 편성 히트맵, 대시보드 설계 패턴 연구(Bach 외, IEEE VIS 2022), 모바일 화면 히트맵 분석 사례.</dd>
     </dl></div>
-    <div class="card" style="margin-top:12px"><div class="ch"><h2>링크 공유와 갱신</h2></div><dl>
-      <dt>링크에 담기는 내용</dt><dd>화면(v), 기간(p), 팀(t), MD(m), 브랜드(b), 구좌(s), 정렬(o), 지도 지표(x)·선택 구좌(k)·화면(c). 상단 "링크 복사"로 복사하면 같은 화면이 다시 열립니다.</dd>
+    <div class="section-title"><h2>링크 공유와 화면 갱신</h2></div>
+    <div class="card"><dl>
+      <dt>링크에 담기는 내용</dt><dd>화면(v), 기간(p), 팀(t), MD(m), 브랜드(b), 구좌(s), 검색어(q), 정렬(o), 지표(x), 화면 필터(c), 선택 구좌(k). 상단 "링크 복사"로 복사하면 같은 화면이 다시 열립니다.</dd>
       <dt>갱신</dt><dd>매일 1회 전일 마감 데이터로 갱신합니다. 지금은 화면 안에서 가상 데이터를 생성하며, 실데이터 연결 시에는 러너가 매일 올리는 JSON을 읽는 구조로 바꿉니다.</dd>
       <dt>화면 버전</dt><dd id="verInfo"></dd>
     </dl></div>
   </section>
-  <footer class="foot" id="foot"></footer>
 </main>
+</div>
 <div id="tip" role="tooltip"></div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <script src="data.js"></script>
 <script src="app-charts.js"></script>
 <script src="app-core.js"></script>
-<script src="app-views.js"></script>
+<script src="app-home.js"></script>
+<script src="app-slot.js"></script>
+<script src="app-team.js"></script>
 <script src="app-report.js"></script>
 <!--
 변경 이력 (최신이 위)
-[v2.0 / 2026-10-24] 화면 재구성 (Master 요청 R014-1~8).
-  - 상단 탭 + 조회 조건 띠 구조로 변경. 조회 기간은 시작일·종료일(접수일자) + 빠른 선택, 비교 기간 컨트롤 제거. 팀·MD·브랜드는 검색형 입력, 편성 구좌는 선택.
-  - 구좌 지도 화면 신설: 홈·별도탭·아울렛탭·오늘혜택·팝업 화면의 구좌 배치를 전시 순번대로 놓고 지표 순위를 색으로 표시. 구좌 캡처(img/)·설명·성과·구좌 내 행사 TOP 5.
-  - 영업팀: 산점도 제거, 편성 사용량 비중 vs 매출 비중 덤벨 차트로 교체. 4그룹 카드와 계층 표 유지.
-  - 전시 행사: 행사 TOP 5, MD TOP 5 먼저 보이고 더 보기로 전체 목록 전개.
-  - 상태 라벨과 설명성 문구 제거. 색 체계를 파랑 순차 램프 + 상태색으로 통일.
-[v1.0 / 2026-10-24] 최초 컨셉 목업. 화면 6개, 시드 20261024 가상 데이터, 파일 분할(각 20KB 이하).
+[v3.0 / 2026-10-24] v1 구성으로 복귀 + 고도화 (Master 요청).
+  - 왼쪽 내비 + 상단 조회 조건(시작일·종료일, 팀·MD·브랜드 검색, 구좌, 행사 검색) + 다크/라이트.
+  - 편성 요약(구 오늘의 허브): 6 타일, 3종 정보, 구좌 매출·팀 TOP 10, 추이 3종, 사업부별 현황, BEST 5. 구좌 지도 요약과 검증 플래그는 제거.
+  - 구좌별 현황(구 구좌 지도): 구좌 카드 갤러리(큰 캡처) + 상세(캡처·지표·위치·추이·행사·팀) + 리포트 1번 시트 표 + 가중치 + 주요 탭 PV.
+  - 영업팀별: 덤벨 + 그룹 카드 + 계층 표(비교 기간·증감 추가). 전시 행사별: TOP 5 + 전체 목록(브랜드 열 추가). 데일리 리포트: 검증 플래그 삭제, 구좌별 전일 대비 추가.
+  - 파일 분할: index.html, styles.css, styles-slot.css, data.js, app-core.js, app-charts.js, app-home.js, app-slot.js, app-team.js, app-report.js (각 20KB 이하).
+[v2.0 / 2026-10-24] 상단 탭 구조, 구좌 지도, 덤벨, TOP 5, 상태 문구 제거.
+[v1.0 / 2026-10-24] 최초 컨셉 목업. 화면 6개.
 -->
 </body>
 </html>
