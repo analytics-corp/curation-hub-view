@@ -58,12 +58,12 @@ const BRANDS={
  '패션담당':['TOMMY JEANS','폴로 랄프로렌','라코스테','지오다노','뱅뱅','올리비아로렌','닥스','헤지스','빈폴','캘빈클라인'],
  '트렌드사업부':['마이클코어스','코치','구찌','프라다','버버리','페라가모','롱샴','투미','쌤소나이트'],
  '리빙사업부':['홈앤시스','이브맘하우스','쿠쿠','테팔','휘슬러','락앤락','삼성전자','LG전자','다이슨','필립스','생활공작소'],
- '라이프사업부':['나이키','아디다스','뉴발랄스','노스페이스','K2','블랙야크','하나투어','모두투어','코웨이','SK매직','청호나이스'],
+ '라이프사업부':['나이키','아디다스','뉴발란스','노스페이스','K2','블랙야크','하나투어','모두투어','코웨이','SK매직','청호나이스'],
  '기타':['현대백화점','현대아울렛','쇼핑라이브','H몰 기획']
 };
 const TITLE_TPL=['{b} 가을 신상 특가','{b} 베스트 모음전','[단독] {b} 시즌오프','{b} 1+1 기획','{b} 주말 특가','{b} 신상품 런칭','{b} 브랜드위크','{b} 베스트셀러 초특가','물가안정 99딜','팍팍다드림','더드림 위크','{b} 단 하루 특가'];
 
-/* 팀 몹록 평탄화 + MD코드 (4자리 코드만 사용, 이름은 쓰지 않음) */
+/* 팀 목록 평탄화 + MD코드 (4자리 코드만 사용, 이름은 쓰지 않음) */
 const TEAMS=[];const MDS=[];
 (function(){const used=new Set();ORG.forEach(([bu,list],bi)=>list.forEach(([name,u,s,m,cat],ti)=>{
   const t={id:TEAMS.length,name,bu,u,s,m,cat,mds:[]};TEAMS.push(t);
@@ -164,8 +164,8 @@ const LAYOUT={
  home_themeSpex:{scr:'home',h:2,img:'home_themeSpex.jpg',desc:'단독 브랜드 기획전 묶음'},
  home_spex_2:{scr:'home',h:2,img:'home_spex_2.jpg',desc:'MD 제안 기획전 묶음'},
  home_mditem_auto:{scr:'home',h:2.4,desc:'인기 급상승 상품. 시스템 자동 노출'},
- home_cateBest:{scr:'home',h:2.4,desc:'주문집중 TV상품. 시스템 자동 노출'},
- ad_mbl_main_pop:{scr:'popup',h:6,img:'ad_mbl_main_pop.jpg',desc:'앱 진입 시 홈 위에 랤는 팝업. 하루 1~3건'},
+ home_cateBest:{scr:'home',h:2.4,desc:'주문 집중 TV 상품. 시스템 자동 노출'},
+ ad_mbl_main_pop:{scr:'popup',h:6,img:'ad_mbl_main_pop.jpg',desc:'앱 진입 시 홈 위에 뜨는 팝업. 하루 1~3건'},
  I_tab:{scr:'tab',h:9,img:'I_tab.jpg',desc:'홈 상단 메뉴에 붙는 브랜드 단독 탭. 탭 전체가 한 브랜드 행사'},
  '30_현대아울렛':{scr:'outlet',h:9,img:'outlet_tab.jpg',desc:'현대아울렛 탭. 탭 전체가 아울렛 행사'},
  today_benefit:{scr:'today',h:9,img:'today_benefit.jpg',desc:'하단 메뉴 오늘혜택. 하루 1건 혜택 행사'}
