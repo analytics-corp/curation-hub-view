@@ -1,61 +1,69 @@
-/* 모바일 편성 허브 — SVG 차트 (외부 라이브러리 없음) */
+/* 모바일 편성 허브 v2 — SVG 차트·구좌 지도 렌더러 (외부 라이브러리 없음) */
 'use strict';
 const SVGNS='http://www.w3.org/2000/svg';
 function svg(tag,attrs,text){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e;}
 function niceMax(v){if(!(v>0))return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;const n=m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10;return n*p;}
+/* 위만 둥근 막대: 데이터 끝은 4px 라운드, 기준선 쪽은 직각 */
+function capPath(x,y,w,h,r){r=Math.min(r,w/2,h);const y0=y+h;return `M${x},${y0}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y0}Z`;}
+const HEAT=['#cde2fb','#b7d3f6','#9ec5f4','#86b6ef','#6da7ec','#5598e7','#3987e5','#2a78d6','#256abf','#1c5cab'];
+function heat(t){t=Math.max(0,Math.min(1,t||0));const i=Math.round(t*(HEAT.length-1));return {bg:HEAT[i],ink:i>=5};}
 
-/* 가로 막대: rows=[{name,v,p,sub,html}] */
-function hbars(box,rows,fmtV,head){
-  box.innerHTML='';const max=Math.max(1,...rows.map(r=>Math.max(r.v||0,r.p||0)));
-  if(head){const h=document.createElement('div');h.className='hrow hhead';h.innerHTML=head.map((t,i)=>`<span${i>1?' style="text-align:right"':''}>${t}</span>`).join('');box.appendChild(h);}
-  rows.forEach(r=>{const d=document.createElement('div');d.className='hrow';d.tabIndex=0;
-    d.innerHTML=`<span class="nm" title="${esc(r.name)}">${esc(r.name)}</span><span class="track"><span class="bar" style="width:${((r.v||0)/max*100).toFixed(1)}%"></span>${r.p!=null?`<span class="bar prev" style="width:${((r.p||0)/max*100).toFixed(1)}%"></span>`:''}</span><span class="val">${fmtV(r.v)}</span><span class="sub">${r.sub||''}</span>`;
-    if(r.html)bindTip(d,r.html);box.appendChild(d);});
-}
-
-/* 세로 막대 + 비교 선 */
-function columnChart(box,title,unit,labels,cur,prev,fmtV){
-  const card=document.createElement('div');card.className='card chart';
-  card.innerHTML=`<div class="ttl"><b>${esc(title)}</b><span>${esc(unit)}</span></div>`;
-  const W=640,H=220,L=56,Rr=12,T=14,B=34;const n=Math.max(1,labels.length);
-  const vals=cur.map(v=>v==null?0:v),pv=(prev||[]).map(v=>v==null?0:v);
-  const max=niceMax(Math.max(...vals,...pv,1)*1.05);const y=v=>T+(H-T-B)*(1-v/max);
-  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':title});
-  for(let i=0;i<=4;i++){const v=max*i/4;s.appendChild(svg('line',{x1:L,x2:W-Rr,y1:y(v),y2:y(v),class:'grid'}));s.appendChild(svg('text',{x:L-6,y:y(v)+4,class:'ax','text-anchor':'end'},fmtV(v)));}
-  const bw=(W-L-Rr)/n,gap=Math.min(6,bw*0.25);
-  vals.forEach((v,i)=>{const x=L+i*bw+gap/2;const r=svg('rect',{x,y:y(v),width:Math.max(1,bw-gap),height:Math.max(0,y(0)-y(v)),class:'bar'+(cur[i]==null?' miss':'')});
-    r.appendChild(svg('title',{},`${labels[i]} · ${cur[i]==null?'값 없음':fmtV(v)}${prev&&prev[i]!=null?' · 비교 '+fmtV(prev[i]):''}`));s.appendChild(r);});
-  if(prev&&prev.length){const pts=pv.map((v,i)=>`${L+i*bw+bw/2},${y(v)}`).join(' ');s.appendChild(svg('polyline',{points:pts,class:'prevline'}));}
-  const step=Math.ceil(n/8);labels.forEach((l,i)=>{if(i%step===0||i===n-1)s.appendChild(svg('text',{x:L+i*bw+bw/2,y:H-10,class:'ax','text-anchor':'middle'},l));});
-  card.appendChild(s);box.appendChild(card);return card;
-}
-
-/* 편성 사용량 대비 매출 산점도 (Ver.12 차트 구성): x 매출, y 가중치 사용량, 평균선으로 4분면 */
-function scatter(box,pts,avgX,avgY,fmtX){
-  box.innerHTML='';const W=720,H=440,L=70,Rr=24,T=24,B=50;
-  const mx=niceMax(Math.max(avgX*1.6,...pts.map(p=>p.x))*1.08),my=niceMax(Math.max(avgY*1.6,...pts.map(p=>p.y))*1.1);
-  const X=v=>L+(W-L-Rr)*v/mx,Y=v=>T+(H-T-B)*(1-v/my);
-  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'편성 사용량 대비 매출 산점도'});
-  const q=(x1,x2,y1,y2,g)=>s.appendChild(svg('rect',{x:X(x1),y:Y(y2),width:X(x2)-X(x1),height:Y(y1)-Y(y2),class:'quad q'+g}));
-  q(avgX,mx,0,avgY,1);q(avgX,mx,avgY,my,2);q(0,avgX,0,avgY,3);q(0,avgX,avgY,my,4);
-  [[1,'1',X(avgX+(mx-avgX)/2),Y(avgY/2)],[2,'2',X(avgX+(mx-avgX)/2),Y(avgY+(my-avgY)/2)],[3,'3',X(avgX/2),Y(avgY/2)],[4,'4',X(avgX/2),Y(avgY+(my-avgY)/2)]].forEach(([g,t,x,y])=>s.appendChild(svg('text',{x,y:y+18,class:'qnum q'+g,'text-anchor':'middle'},t)));
-  for(let i=0;i<=5;i++){const v=mx*i/5;s.appendChild(svg('text',{x:X(v),y:H-28,class:'ax','text-anchor':'middle'},fmtX(v)));}
-  for(let i=0;i<=5;i++){const v=my*i/5;s.appendChild(svg('text',{x:L-8,y:Y(v)+4,class:'ax','text-anchor':'end'},Math.round(v).toLocaleString('ko-KR')));}
-  s.appendChild(svg('line',{x1:X(avgX),x2:X(avgX),y1:T,y2:H-B,class:'avg avgx'}));s.appendChild(svg('line',{x1:L,x2:W-Rr,y1:Y(avgY),y2:Y(avgY),class:'avg avgy'}));
-  s.appendChild(svg('text',{x:W/2,y:H-6,class:'axl','text-anchor':'middle'},'편성 구좌 발생 매출 (기간 합계)'));
-  s.appendChild(svg('text',{x:14,y:H/2,class:'axl','text-anchor':'middle',transform:`rotate(-90 14 ${H/2})`},'편성 사용량 (가중치 반영 건수)'));
-  pts.forEach(p=>{const g=svg('g',{class:'pt g'+p.g});const c=svg('circle',{cx:X(p.x),cy:Y(p.y),r:6});c.appendChild(svg('title',{},`${p.name} · ${GROUPS[p.g][0]} ${GROUPS[p.g][1]}\n매출 ${fmtX(p.x)} · 사용량 ${p.y.toFixed(1)}`));
-    g.appendChild(c);g.appendChild(svg('text',{x:X(p.x)+8,y:Y(p.y)-7,class:'lbl'},p.name.replace(/(팀|Lab)$/,'')));s.appendChild(g);});
+/* 세로 막대 (단일 계열) */
+function columnChart(box,labels,vals,fmtV,opt){
+  opt=opt||{};box.innerHTML='';
+  const W=opt.w||640,H=opt.h||220,L=54,R=12,T=16,B=30;const n=Math.max(1,labels.length);
+  const v=vals.map(x=>x==null?0:x);const max=niceMax(Math.max(...v,1)*1.05);const y=q=>T+(H-T-B)*(1-q/max);
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':opt.label||'막대 차트'});
+  for(let i=0;i<=4;i++){const q=max*i/4;s.appendChild(svg('line',{x1:L,x2:W-R,y1:y(q),y2:y(q),class:'grid'}));s.appendChild(svg('text',{x:L-6,y:y(q)+4,class:'ax','text-anchor':'end'},fmtV(q)));}
+  const slot=(W-L-R)/n,bw=Math.min(24,Math.max(2,slot-4));
+  let maxI=0;v.forEach((q,i)=>{if(q>v[maxI])maxI=i;});
+  v.forEach((q,i)=>{const x=L+i*slot+(slot-bw)/2;const h=Math.max(0,y(0)-y(q));const p=svg('path',{d:capPath(x,y(q),bw,h,4),class:'bar'+(vals[i]==null?' miss':'')});
+    p.appendChild(svg('title',{},`${labels[i]} · ${vals[i]==null?'값 없음':fmtV(q)}`));s.appendChild(p);
+    if(i===maxI||i===n-1)s.appendChild(svg('text',{x:x+bw/2,y:y(q)-5,class:'lbl2','text-anchor':'middle'},fmtV(q)));});
+  const step=Math.ceil(n/8);labels.forEach((l,i)=>{if(i%step===0||i===n-1)s.appendChild(svg('text',{x:L+i*slot+slot/2,y:H-10,class:'ax','text-anchor':'middle'},l));});
   box.appendChild(s);
 }
 
-/* 요약 타일용 스파크라인 */
-function sparkline(cur,prev){
-  const W=160,H=46,n=Math.max(cur.length,(prev||[]).length,2);const vals=cur.map(v=>v==null?0:v),pv=(prev||[]).map(v=>v==null?0:v);
-  const max=Math.max(...vals,...pv,1);const x=i=>i*(W-2)/(n-1)+1,y=v=>H-2-(H-6)*v/max;
-  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,'aria-hidden':'true'});
-  if(pv.length>1)s.appendChild(svg('polyline',{points:pv.map((v,i)=>`${x(i)},${y(v)}`).join(' '),class:'sp prev'}));
-  if(vals.length>1)s.appendChild(svg('polyline',{points:vals.map((v,i)=>`${x(i)},${y(v)}`).join(' '),class:'sp cur'}));
-  else if(vals.length===1)s.appendChild(svg('circle',{cx:W/2,cy:y(vals[0]),r:3,class:'sp cur'}));
+/* 요약 타일 스파크라인 */
+function sparkline(vals){
+  const W=160,H=40,n=Math.max(vals.length,2);const v=vals.map(x=>x==null?0:x);const max=Math.max(...v,1);
+  const x=i=>i*(W-4)/(n-1)+2,y=q=>H-3-(H-8)*q/max;const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,'aria-hidden':'true'});
+  if(v.length>1){const pts=v.map((q,i)=>`${x(i)},${y(q)}`).join(' ');s.appendChild(svg('polygon',{points:`${x(0)},${H-3} ${pts} ${x(v.length-1)},${H-3}`,class:'sp area'}));s.appendChild(svg('polyline',{points:pts,class:'sp cur'}));
+    s.appendChild(svg('circle',{cx:x(v.length-1),cy:y(v[v.length-1]),r:3.5,class:'dot-b'}));}
   return s;
 }
+
+/* BEST 목록: rows=[{name,sub,v,sub2,act}] */
+function bestList(box,rows,fmtV,opt){
+  opt=opt||{};const max=Math.max(1,...rows.map(r=>r.v||0));
+  box.innerHTML=rows.length?rows.map((r,i)=>`<div class="row${r.act?' clickable':''}"${r.act?` data-act="${esc(r.act)}"`:''}><span class="rk">${i+1}</span><span class="nm" title="${esc(r.name)}">${esc(r.name)}${r.sub?`<small>${esc(r.sub)}</small>`:''}</span><span class="vl">${fmtV(r.v)}${r.sub2?`<small>${esc(r.sub2)}</small>`:''}</span><span class="bar"><i style="width:${(r.v/max*100).toFixed(1)}%"></i></span></div>`).join(''):'<div class="muted" style="padding:8px 0">해당 없음</div>';
+}
+
+/* 덤벨: rows=[{name,a,b,g}] a=사용량 비중, b=매출 비중 */
+function dumbbell(box,rows,fmtV){
+  box.innerHTML='';const W=640,RH=24,L=118,R=86,T=22;const H=T+rows.length*RH+8;
+  const max=Math.max(0.01,...rows.map(r=>Math.max(r.a,r.b)))*1.08;const X=v=>L+(W-L-R)*v/max;
+  const s=svg('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'팀별 편성 사용량 비중과 매출 비중'});
+  for(let i=0;i<=4;i++){const q=max*i/4;s.appendChild(svg('line',{x1:X(q),x2:X(q),y1:T-6,y2:H-6,class:'grid'}));s.appendChild(svg('text',{x:X(q),y:T-10,class:'ax','text-anchor':'middle'},fmtV(q)));}
+  rows.forEach((r,i)=>{const y=T+i*RH+RH/2;const g=svg('g',{class:'drow'});
+    g.appendChild(svg('text',{x:L-8,y:y+4,class:'lbl','text-anchor':'end'},r.name));
+    g.appendChild(svg('line',{x1:X(Math.min(r.a,r.b)),x2:X(Math.max(r.a,r.b)),y1:y,y2:y,class:'link'}));
+    g.appendChild(svg('circle',{cx:X(r.a),cy:y,r:5,class:'dot-a'}));g.appendChild(svg('circle',{cx:X(r.b),cy:y,r:5,class:'dot-b'}));
+    const d=r.b-r.a;const t=svg('text',{x:W-R+10,y:y+4,class:'lbl2'},(d>=0?'▲ ':'▼ ')+(Math.abs(d)*100).toFixed(1)+'%p');t.setAttribute('fill',d>=0?'#006300':'#d03b3b');g.appendChild(t);
+    g.appendChild(svg('title',{},`${r.name} · 편성 사용량 비중 ${fmtV(r.a)} · 매출 비중 ${fmtV(r.b)} · ${GROUPS[r.g]?GROUPS[r.g].join(' '):''}`));s.appendChild(g);});
+  box.appendChild(s);
+}
+
+/* 구좌 지도: 화면(scr)에 속한 구좌를 전시 순번대로 블록으로 그린다. values: Map(code -> {v,text,rank}) */
+function slotsOf(scr){const all=SLOTS.map(s=>({s,auto:false})).concat(AUTO_SLOTS.map(s=>({s,auto:true})));
+  return all.filter(x=>(LAYOUT[x.s.code]||{}).scr===scr).sort((a,b)=>(+a.s.seq||0)-(+b.s.seq||0));}
+function renderPhone(box,scr,values,pick,mini){
+  const nav=SCREENS.map(([k,n])=>`<span class="${k===scr?'on':''}">${n}</span>`).join('');
+  const ranked=[...values.values()].filter(x=>x.rank!=null);const n=ranked.length||1;
+  const blocks=slotsOf(scr).map(({s,auto})=>{const m=LAYOUT[s.code]||{h:2};const val=values.get(s.code);
+    if(auto)return `<div class="blk auto" style="--h:${m.h}" title="${esc(s.name)} · 자동노출"><span class="n">${esc(s.name)}</span><span class="v">자동노출</span></div>`;
+    const t=val&&val.rank!=null?1-val.rank/Math.max(1,n-1):0;const c=heat(t);
+    return `<div class="blk${c.ink?' ink':''}${s.code===pick?' sel':''}${scr==='popup'?' pop':''}" style="--h:${m.h};background:${c.bg}" data-pick="${esc(s.code)}" tabindex="0" role="button" title="${esc(s.name)}"><span class="q">${val&&val.rank!=null?val.rank+1+'위':''}</span><span class="n">${esc(s.name)}</span><span class="v">${val?esc(val.text):''}</span></div>`;}).join('');
+  box.innerHTML=(mini?'':`<div class="pbar"><span>9:41</span><span>LTE 100%</span></div>`)+`<div class="pnav">${nav}</div><div class="pbody">${blocks||'<div class="muted" style="padding:20px;font-size:12px">이 화면에는 편성 구좌가 없습니다</div>'}</div>`;
+}
+function heatLegend(box,label){box.innerHTML=`<span>낮음</span><span class="ramp"></span><span>높음</span><span class="muted">· ${esc(label)} 순위 기준 · 빗금은 자동노출 영역</span>`;}
