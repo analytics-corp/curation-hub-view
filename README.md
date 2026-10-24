@@ -17,7 +17,7 @@
 | `app-charts.js` | SVG 차트(막대·스파크라인·덤벨), BEST 목록, 구좌 지도 렌더러 |
 | `app-views.js` | 브리핑, 구좌 지도 화면 |
 | `app-report.js` | 영업팀, 전시 행사, 데일리 리포트, 기준 화면, 초기화 |
-| `img/` | 구좌 캡처 18장(월간 리포트 1번 시트 셀 메모 이미지를 640px 폭 JPEG로 변환) |
+| `img/` | 구좌 캡처 18장(월간 리포트 1번 시트 셀 메모 이미지, 약 300×640px JPEG, 파일당 20KB 이하로 압축) |
 | `tests/harness.js` | Node 검사 하네스 |
 
 ## 검사
@@ -31,5 +31,5 @@ cd site && node tests/harness.js
 ## 갱신 규칙
 
 - 코드 파일은 파일당 20KB 이하를 유지합니다(세션이 API로 직접 올릴 수 있는 크기).
-- 이미지 등 바이너리는 git 푸시로만 반영합니다.
-- 공개 저장소 반영: 워크플로 `.github/workflows/sync-site.yml`(내용은 PR #4 본문. 세션은 이 경로에 쓸 수 없어 Master가 웹에서 만듭니다)과 저장소 비밀 `VIEW_REPO_TOKEN`이 있으면 `main`의 `site/` 변경이 자동 복사됩니다. 그 전에는 세션이 API로 코드 파일만 올리고, `img/`는 Master가 공개 저장소에 직접 올립니다.
+- 이미지 등 바이너리는 git 푸시로만 정본에 반영합니다(API 전송은 바이트가 바뀜). 구좌 캡처는 사이트 용량을 위해 파일당 20KB 이하로 둡니다.
+- 공개 저장소 반영: 워크플로 `.github/workflows/sync-site.yml`(내용은 PR #4 본문. 세션은 이 경로에 쓸 수 없어 Master가 웹에서 만듭니다)과 저장소 비밀 `VIEW_REPO_TOKEN`이 있으면 `main`의 `site/` 변경이 자동 복사됩니다. 그 전에는 세션이 코드 파일만 API로 올리고 sha를 대조하며, `img/`는 Master가 공개 저장소에 직접 올립니다.
