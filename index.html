@@ -59,14 +59,13 @@
 
   <!-- 구좌별 현황 -->
   <section class="view" id="view-slot" hidden>
-    <div class="section-title"><h2>구좌 위치와 결과</h2><span class="hint">왼쪽 앱 화면의 빨간 점선이 선택한 구좌 · 오른쪽에서 화면과 구좌를 고르면 캡처와 결과가 바뀝니다</span></div>
-    <div class="admap">
-      <div class="admap-left"><div class="phone big"><div class="pshot" id="phoneShot"></div></div>
-        <div class="plegend"><span><i class="red"></i>빨간 점선 = 선택한 구좌</span><span><i class="gray"></i>흐린 영역 = 구좌 밖</span></div><div class="pcap" id="phoneCap"></div></div>
-      <div class="admap-right">
-        <div class="card"><div class="tools"><div><span class="seglabel">순위 기준</span><div class="seg" id="metricSeg" style="display:inline-flex;vertical-align:middle"></div></div><label class="toggle"><input type="checkbox" id="dimToggle" checked> 구좌 밖 영역 흐리게</label></div>
-          <div class="scrgrid" id="screens"></div><div class="chips2" id="slotChips"></div></div>
-        <div class="card detail" id="slotDetail"></div>
+    <div class="section-title"><h2>구좌 위치와 결과</h2><span class="hint">Hmall 광고 구좌 안내와 같은 구성 · 왼쪽 앱 화면의 빨간 점선이 선택한 구좌, 오른쪽에서 화면·구좌·순위 기준을 고르면 결과가 바뀝니다</span></div>
+    <div class="am-top"><div class="am-legend"><span class="lg"><i class="l-ad"></i>편성 구좌 (빨간 점선)</span><span class="lg"><i class="l-na"></i>구좌 밖 · 자동노출 영역</span></div><label class="am-switch"><input type="checkbox" id="dimToggle" checked>구좌 밖 영역 흐리게</label></div>
+    <div class="am-wrap">
+      <div class="am-phone"><div class="am-screen" id="phoneShot"></div><p class="am-hint" id="phoneCap"></p></div>
+      <div class="am-panel">
+        <div class="am-card am-nav"><div class="am-seg" id="screens"></div><div class="am-chips" id="slotChips"></div></div>
+        <div class="am-card"><div class="am-detail" id="slotDetail"></div></div>
       </div>
     </div>
     <div class="section-title"><h2>편성 구좌별 효율</h2><span class="hint">리포트 1번 시트 구성 · 단위: 원, 건 · 일평균은 선택 기간 일수로 나눈 값 · 농도는 값 크기</span></div>
@@ -140,7 +139,7 @@
     <div class="section-title"><h2>화면 구성 근거</h2></div>
     <div class="card"><dl>
       <dt>편성 요약</dt><dd>사내 Power BI 보고서(모바일 요약·일별·주 추세, 쇼핑라이브 실적)의 읽기 습관을 따릅니다. 조회 기간은 시작일·종료일, 상위 5개(BEST 5) 목록, 증감 병기, 표 안의 값은 농도로 표시.</dd>
-      <dt>구좌별 현황</dt><dd>Hmall 광고 구좌 안내 페이지처럼 왼쪽에 실제 앱 화면 캡처를 두고 선택한 구좌만 밝게 보입니다(빨간 점선 = 구좌, 글자 라벨 = 구좌 글자표 A~Q). 오른쪽에서 순위 기준·화면·구좌를 고르면 캡처와 결과(지표 8개와 비교 기간 증감, 매출 추이, 행사 TOP 5, 팀별 사용 비중)가 바뀝니다. 아래는 리포트 1번 시트 표, 가중치, 주요 탭 PV입니다.</dd>
+      <dt>구좌별 현황</dt><dd>Hmall 광고 구좌 안내 페이지의 양식을 그대로 옮겼습니다. 왼쪽은 실제 앱 화면 캡처이고 빨간 점선과 글자 이름표(A~Q)가 선택한 구좌입니다(구좌 밖은 흐리게, 끌 수 있음). 오른쪽에서 화면 그룹과 구좌 칩을 고르면 결과 카드(지표 8개와 비교 기간 증감, 순위)가 바뀌고, 지표 카드를 누르면 순위 기준이 바뀝니다. 그 아래는 매출 추이, 행사 TOP 5, 팀별 사용 비중, 리포트 1번 시트 표, 가중치, 주요 탭 PV입니다.</dd>
       <dt>영업팀별 현황</dt><dd>산점도 대신 팀마다 "쓴 비중"과 "번 비중"을 한 줄에 나란히 놓는 덤벨 차트를 씁니다. 4그룹 분류 규칙은 시각화 차트(Ver.12)와 같습니다.</dd>
       <dt>색 · 차트 규칙</dt><dd>크기는 한 색 계열의 농도로, 증감은 초록·빨강 상태색으로만 표시합니다. 막대는 얇게, 격자는 가는 실선, 값은 끝점과 상위 항목에만 직접 표기하고 나머지는 표와 툴팁이 맡습니다. 두 개의 세로축을 한 차트에 겹치지 않습니다.</dd>
       <dt>참고</dt><dd>Hmall 광고 구좌 안내(hmall-ad-map), 광고 성과 센터(adcenter-view)의 조회 조건, 홈쇼핑 편성 모니터링(hdhs)의 편성 히트맵, 대시보드 설계 패턴 연구(Bach 외, IEEE VIS 2022), 모바일 화면 히트맵 분석 사례.</dd>
@@ -165,7 +164,8 @@
 <script src="app-report.js"></script>
 <!--
 변경 이력 (최신이 위)
-[v3.1 / 2026-10-24] 구좌별 현황을 왼쪽 앱 화면 캡처(선택 구좌 밖 흐리게, 글자 라벨) + 오른쪽 화면·구좌 선택과 결과 구성으로 변경 (Master 5차 지시). 구좌 카드 갤러리와 블록식 앱 화면 위치 제거.
+[v3.2 / 2026-10-26] 구좌별 현황을 Hmall 광고 구좌 안내 페이지 양식으로 다시 구성(Master 6차 지시): 휴대폰 틀 없이 캡처 자체를 화면으로, 빨간 점선 구좌 테두리 + 글자 이름표, 화면 그룹 선택·구좌 칩, 결과 카드(지표 8개, 누르면 순위 기준 변경)·사실 표. 캡처 16장을 Master 재업로드 고화질 PNG로 교체하고 구좌 영역 좌표를 픽셀 분석으로 다시 측정.
+  [v3.1 / 2026-10-24] 구좌별 현황을 왼쪽 앱 화면 캡처(선택 구좌 밖 흐리게, 글자 라벨) + 오른쪽 화면·구좌 선택과 결과 구성으로 변경 (Master 5차 지시). 구좌 카드 갤러리와 블록식 앱 화면 위치 제거.
   [v3.0 / 2026-10-24] v1 구성으로 복귀 + 고도화 (Master 요청).
   - 왼쪽 내비 + 상단 조회 조건(시작일·종료일, 팀·MD·브랜드 검색, 구좌, 행사 검색) + 다크/라이트.
   - 편성 요약(구 오늘의 허브): 6 타일, 3종 정보, 구좌 매출·팀 TOP 10, 추이 3종, 사업부별 현황, BEST 5. 구좌 지도 요약과 검증 플래그는 제거.
