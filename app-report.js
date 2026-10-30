@@ -32,13 +32,28 @@ function act(code){const i=code.indexOf(':');const k=code.slice(0,i),v=code.slic
   if(k==='t')state.team=state.team===v?'':v;else if(k==='m')state.md=state.md===v?'':v;else if(k==='b')state.brand=state.brand===v?'':v;else if(k==='q')state.q=state.q===v?'':v.slice(0,40);
   if(state.view!=='event'){state.view='event';state.moreE=true;}state.limit=50;render(true);window.scrollTo(0,0);}
 
+/* 날짜 입력: 브라우저·운영체제 날짜 형식과 무관하게 YYYY.MM.DD 로 보이도록 글자 칸 + 달력 버튼(숨은 date 입력의 달력)을 씀 */
+function normDate(v){const m=String(v||'').trim().match(/^(\d{4})\D+(\d{1,2})\D+(\d{1,2})\D*$/)||String(v||'').trim().match(/^(\d{4})(\d{2})(\d{2})$/);return m?`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`:'';}
+function openPicker(id){const p=document.getElementById(id+'Pick');if(!p)return;p.value=normDate(document.getElementById(id).value);try{if(p.showPicker){p.showPicker();return;}}catch(e){}p.focus();p.click();}
+/* 줄바꿈 정리: ' · '로 나뉜 구절과 괄호 묶음을 한 덩어리로 두어, 줄이 바뀔 때 구절 사이에서만 바뀌게 함 */
+function addTxt(f,txt){/* 짧은 괄호 묶음(16자 이하)은 줄이 바뀌지 않게 */let k=0;txt.replace(/\([^()]{2,16}\)/g,(m,i)=>{if(!/[ ·]/.test(m))return m;if(i>k)f.appendChild(document.createTextNode(txt.slice(k,i)));const s=document.createElement('span');s.className='nw';s.textContent=m;f.appendChild(s);k=i+m.length;return m;});if(k<txt.length)f.appendChild(document.createTextNode(txt.slice(k)));}
+function tidyText(root){if(!root||!document.createTreeWalker)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const list=[];let n;
+  while((n=w.nextNode())){const p=n.parentElement,t=n.nodeValue;if(!p||t.length<8||!/ · |\(/.test(t)||p.closest('.kg,.nw,script,style,svg,option,select,textarea,button,th,.chip,.ztag'))continue;list.push(n);}
+  list.forEach(n=>{const segs=n.nodeValue.split(' · ');const f=document.createDocumentFragment();const first=!n.previousSibling,end=!n.nextSibling;
+    segs.forEach((sg,i)=>{const last=i===segs.length-1;const whole=(i>0||first)&&(!last||end);const parts=whole?sg.split(/ (?=\()/):[sg];
+      parts.forEach((pt,j)=>{const txt=pt+(j===parts.length-1&&!last?' ·':'');if(j>0)f.appendChild(document.createTextNode(' '));
+        if(whole&&(/ /.test(txt.trim())||/^\(/.test(txt))){const s=document.createElement('span');s.className='kg';addTxt(s,txt);f.appendChild(s);}else addTxt(f,txt);});
+      if(!last)f.appendChild(document.createTextNode(' '));});
+    n.parentNode.replaceChild(f,n);});}
+
 function init(){
-  applyTheme();applyNav();fillFilterOptions();applyHash();
+  applyTheme();applyNav();fillFilterOptions();applyHash();tidyText(document.querySelector('.nav'));
   document.getElementById('appFoot').textContent=`${META.dataKind} · ${META.baseDate} · ${APP.version}`;
   const on=(id,ev,fn)=>{const e=document.getElementById(id);if(e)e.addEventListener(ev,fn);};
   document.querySelectorAll('.nav button[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;state.limit=50;render(true);window.scrollTo(0,0);}));
-  const onDate=()=>{const f=document.getElementById('fFrom').value,t=document.getElementById('fTo').value;if(f&&t&&applyCustom(f,t))render();};
+  const onDate=()=>{const f=normDate(document.getElementById('fFrom').value),t=normDate(document.getElementById('fTo').value);if(f&&t&&applyCustom(f,t))render();else syncFilterInputs();};
   on('fFrom','change',onDate);on('fTo','change',onDate);
+  ['fFrom','fTo'].forEach(k=>on(k+'Pick','change',e=>{if(e.target.value){document.getElementById(k).value=e.target.value.replace(/-/g,'.');onDate();}}));
   on('fTeam','change',e=>{const v=e.target.value.trim();state.team=TEAMS.some(t=>t.name===v)?v:'';render();});
   on('fMD','change',e=>{const v=e.target.value.trim();state.md=MDS.some(m=>m.code===v)?v:'';render();});
   on('fBrand','change',e=>{const v=e.target.value.trim();state.brand=BRAND_LIST.includes(v)?v:'';render();});
@@ -48,6 +63,7 @@ function init(){
   on('eMore','click',()=>{state.limit+=50;render();});
   const dt=document.getElementById('dimToggle');if(dt){dt.checked=dimOn();dt.addEventListener('change',()=>{try{localStorage.setItem('hubDim',dt.checked?'1':'0');}catch(e){}const ps=document.getElementById('phoneShot');if(ps)ps.classList.toggle('nodim',!dt.checked);});}
   document.addEventListener('click',e=>{const t=e.target;if(!(t instanceof Element))return;
+    const cb=t.closest('[data-cal]');if(cb){openPicker(cb.dataset.cal);return;}
     const pr=t.closest('[data-preset]');if(pr){applyPreset(pr.dataset.preset);render();return;}
     const cl=t.closest('[data-clear]');if(cl){state[cl.dataset.clear]='';render();return;}
     const go=t.closest('[data-go]');if(go){state.view=go.dataset.go;render(true);window.scrollTo(0,0);return;}

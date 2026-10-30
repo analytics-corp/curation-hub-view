@@ -128,8 +128,8 @@ function fillFilterOptions(){const g=id=>document.getElementById(id);
   g('dlMD').innerHTML=MDS.map(m=>`<option value="${esc(m.code)}">${esc(m.team)} · ${esc(m.cat)}</option>`).join('');
   g('dlBrand').innerHTML=BRAND_LIST.map(b=>`<option value="${esc(b)}"></option>`).join('');
   g('presets').innerHTML=Object.keys(PRESETS).map(k=>`<button type="button" data-preset="${k}">${PRESETS[k]}</button>`).join('');
-  g('fFrom').min=META.dataMin;g('fFrom').max=META.dataMax;g('fTo').min=META.dataMin;g('fTo').max=META.dataMax;}
-function syncFilterInputs(){const g=id=>document.getElementById(id);g('fFrom').value=DATES[state.from];g('fTo').value=DATES[state.to];g('fTeam').value=state.team;g('fMD').value=state.md;g('fBrand').value=state.brand;g('fSlot').value=state.slot;if(g('fQ').value!==state.q)g('fQ').value=state.q;
+  ['fFromPick','fToPick'].forEach(k=>{g(k).min=META.dataMin;g(k).max=META.dataMax;});}
+function syncFilterInputs(){const g=id=>document.getElementById(id);g('fFrom').value=DATES[state.from].replace(/-/g,'.');g('fTo').value=DATES[state.to].replace(/-/g,'.');g('fTeam').value=state.team;g('fMD').value=state.md;g('fBrand').value=state.brand;g('fSlot').value=state.slot;if(g('fQ').value!==state.q)g('fQ').value=state.q;
   document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.preset===state.preset?'true':'false'));}
 function renderChips(r,p){const c=document.getElementById('chips');const parts=[`<span class="chip">${esc(periodWord())} · ${rangeLabel(r)}</span>`];
   if(p)parts.push(`<span class="chip">비교 ${rangeLabel(p)}${p.partial?' (일부)':''}</span>`);
@@ -146,5 +146,5 @@ function render(push){
   document.getElementById('pageTitle').textContent=TITLES[state.view][0];document.getElementById('pageSub').textContent=TITLES[state.view][1];document.title=TITLES[state.view][0]+' · '+APP.name;
   document.getElementById('filters').hidden=state.view==='guide'||state.view==='daily';
   const ctx={r,p,slots:aggSlots(r),prev:p?aggSlots(p):null};ctx.teams=aggTeams(r,ctx.slots.weights);ctx.prevTeams=p?aggTeams(p,ctx.slots.weights):null;
-  if(V[state.view])V[state.view](ctx);writeHash(!!push);}
+  if(V[state.view])V[state.view](ctx);if(typeof tidyText==='function')tidyText(document.querySelector('main'));writeHash(!!push);}
 const V={};
