@@ -34,8 +34,7 @@ function act(code){const i=code.indexOf(':');const k=code.slice(0,i),v=code.slic
 
 function init(){
   applyTheme();fillFilterOptions();applyHash();
-  document.getElementById('appFoot').innerHTML=`기준일 ${fmt.date(META.baseDate)} 마감<br>${esc(META.pipeline)} · ${esc(META.redefine)}<br>모든 수치는 ${esc(META.dataKind)}`;
-  document.getElementById('appBadge').textContent=`${META.dataKind} · 컨셉 ${APP.version}`;
+  document.getElementById('appFoot').textContent=`${META.dataKind} · ${META.baseDate} · ${APP.version}`;
   const on=(id,ev,fn)=>{const e=document.getElementById(id);if(e)e.addEventListener(ev,fn);};
   document.querySelectorAll('.nav button[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;state.limit=50;render(true);window.scrollTo(0,0);}));
   const onDate=()=>{const f=document.getElementById('fFrom').value,t=document.getElementById('fTo').value;if(f&&t&&applyCustom(f,t))render();};

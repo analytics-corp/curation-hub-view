@@ -6,7 +6,7 @@ const TITLES={home:['편성 요약','조회 기간의 편성 자원·실적·트
  slot:['구좌별 현황','편성 구좌 17개의 위치와 결과. 왼쪽 앱 화면에서 선택한 구좌만 밝게 보이고, 오른쪽에서 화면과 구좌를 고르면 결과가 바뀝니다. 아래 표는 리포트 1번 시트 구성을 일 단위로 옮긴 것입니다.'],
  team:['영업팀별 현황','팀이 쓴 편성 자원과 거둔 매출을 나란히 놓고 4개 효율 그룹으로 나눕니다. 리포트 2번 시트와 시각화 차트(Ver.12) 기준.'],
  event:['전시 행사별 현황','행사(배너) 단위 구좌 유입 실적. 행사·MD TOP 5를 먼저 보고, 더 보기로 전체 목록을 폅니다.'],
- daily:['편성 데일리 리포트','기준일 전일 마감 기준의 3종 정보 변동, 구좌별 증감, 리포트 초안, 운영 사이클.'],
+ daily:['편성 데일리 리포트','전일 마감 3종 정보 변동, 구좌별 증감, 리포트 초안, 운영 사이클.'],
  guide:['기준 안내','지표 정의, 데이터 기준, 화면 구성 근거, 링크 공유와 갱신 방식.']};
 const METRICS={sales:['구좌 발생 매출',v=>fmt.money(v)],clk:['클릭수',v=>fmt.cnt(v)],w:['가중치',v=>fmt.pct(v)],perBn:['배너 1개당 매출',v=>fmt.money(v)],ratio:['구좌 매출 비중',v=>fmt.pct(v)],rb:['재구매율',v=>fmt.pct(v)]};
 const GROUPS={1:['1그룹','고효율'],2:['2그룹','준효율'],3:['3그룹','비활성'],4:['4그룹','저효율']};
@@ -128,12 +128,12 @@ function fillFilterOptions(){const g=id=>document.getElementById(id);
   g('fFrom').min=META.dataMin;g('fFrom').max=META.dataMax;g('fTo').min=META.dataMin;g('fTo').max=META.dataMax;}
 function syncFilterInputs(){const g=id=>document.getElementById(id);g('fFrom').value=DATES[state.from];g('fTo').value=DATES[state.to];g('fTeam').value=state.team;g('fMD').value=state.md;g('fBrand').value=state.brand;g('fSlot').value=state.slot;if(g('fQ').value!==state.q)g('fQ').value=state.q;
   document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.preset===state.preset?'true':'false'));}
-function renderChips(r,p){const c=document.getElementById('chips');const parts=[`<span class="chip base">기준일 ${fmt.date(META.baseDate)} 마감</span>`,`<span class="chip">${esc(periodWord())} · ${rangeLabel(r)}</span>`];
+function renderChips(r,p){const c=document.getElementById('chips');const parts=[`<span class="chip">${esc(periodWord())} · ${rangeLabel(r)}</span>`];
   if(p)parts.push(`<span class="chip">비교 ${rangeLabel(p)}${p.partial?' (일부)':''}</span>`);
   const chip=(k,label)=>parts.push(`<span class="chip">${esc(label)} <button type="button" data-clear="${k}" title="조건 지우기">×</button></span>`);
   if(state.team)chip('team','팀 '+state.team);if(state.md){const m=MDS.find(x=>x.code===state.md);chip('md','MD '+state.md+(m?' ('+m.team+')':''));}
   if(state.brand)chip('brand','브랜드 '+state.brand);if(state.slot){const s=SLOTS.find(x=>x.code===state.slot);if(s)chip('slot','구좌 '+s.name);}if(state.q.trim())chip('q','검색 '+state.q.trim());
-  parts.push(`<span class="chip mock">${META.dataKind}</span>`);c.innerHTML=parts.join('');}
+  c.innerHTML=parts.join('');}
 function resetFilters(){state.team='';state.md='';state.brand='';state.slot='';state.q='';applyPreset('d7');state.limit=50;state.moreE=false;state.moreM=false;render();}
 
 function render(push){
