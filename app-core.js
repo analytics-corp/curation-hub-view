@@ -111,6 +111,9 @@ function showTip(html,x,y){const t=document.getElementById('tip');if(!t)return;t
 function hideTip(){const t=document.getElementById('tip');if(t)t.style.display='none';}
 function bindTip(el,html){el.addEventListener('pointermove',e=>showTip(typeof html==='function'?html():html,e.clientX,e.clientY));el.addEventListener('pointerleave',hideTip);}
 function applyTheme(){let th='light';try{th=localStorage.getItem('hub-theme')||'light';}catch(e){}document.documentElement.setAttribute('data-theme',th);}
+function setNav(off){const a=document.querySelector('.app');if(a){if(off)a.classList.add('nav-off');else a.classList.remove('nav-off');}const b=document.getElementById('btnNav');if(b){b.setAttribute('aria-pressed',String(off));b.title=off?'왼쪽 메뉴를 다시 엽니다':'왼쪽 메뉴를 숨기고 화면을 넓게 봅니다';const s=b.querySelector('span');if(s)s.textContent=off?'메뉴 보기':'메뉴 숨기기';}}
+function applyNav(){let off=false;try{off=localStorage.getItem('hub-nav')==='off';}catch(e){}setNav(off);}
+function toggleNav(){const a=document.querySelector('.app');const off=!(a&&a.classList.contains('nav-off'));setNav(off);try{localStorage.setItem('hub-nav',off?'off':'on');}catch(e){}}
 function toggleTheme(){const cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',cur);try{localStorage.setItem('hub-theme',cur);}catch(e){}}
 function groupPill(g){return g?`<span class="gpill g${g}">${GROUPS[g][0]} ${GROUPS[g][1]}</span>`:'<span class="pill none">편성 없음</span>';}
 function heatCell(v,min,max,text){const t=max>min?(v-min)/(max-min):0;const c=heat(t*0.8);return `<td class="num heat"><i style="background:${c.bg}"></i><span>${text}</span></td>`;}

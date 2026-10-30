@@ -57,8 +57,8 @@ V.slot=function(ctx){
   document.getElementById('slotTable').innerHTML=`<thead><tr>${cols.map((c,i)=>`<th${i>=7?' class="num"':''}>${c}</th>`).join('')}</tr></thead><tbody><tr class="total">${td('')}${td('')}${td('')}${td('total_plan')}${td('합계 (모바일전략 편성)')}${td('')}${td('')}${td('100.0%',1)}${td(fmt.money(tS),1)}${td(fmt.pct(tS/tT),1)}${td(fmt.cnt(tC),1)}${td('100.0%',1)}${td(fmt.n1(tB),1)}${td(fmt.money(tS/tB),1)}${td(fmt.cnt(tC/tB),1)}${td('-',1)}${td(fmt.money(tT),1)}</tr>${slots.rows.map((y,i)=>row(y,i,'plan')).join('')}${auto.map((y,i)=>row(y,i,'auto')).join('')}</tbody>`;
   /* 가중치 막대 + 주요 탭 PV */
   const prevMap=new Map((prev?prev.rows:[]).map(y=>[y.slot.code,y]));
-  hbars(document.getElementById('weightBars'),slots.rows.map(y=>({name:letterOf(y.slot.code)+' '+y.slot.name,v:y.w,p:prevMap.has(y.slot.code)?prevMap.get(y.slot.code).w:null,sub:`매출 ${fmt.pct(y.sShare)} · 클릭 ${fmt.pct(y.cShare)}`,act:'k:'+y.slot.code,
-    html:()=>`<b>${esc(y.slot.name)}</b><br>가중치 = 매출 비중 ${fmt.pct(y.sShare)} × 50% + 클릭 비중 ${fmt.pct(y.cShare)} × 50% = <b>${fmt.pct(y.w)}</b>`})),q=>fmt.pct(q),['편성 구좌','','가중치','비중 구성']);
+  hbars(document.getElementById('weightBars'),slots.rows.map(y=>({name:letterOf(y.slot.code)+' '+y.slot.name,v:y.w,p:prevMap.has(y.slot.code)?prevMap.get(y.slot.code).w:null,sub:`${fmt.pct(y.sShare)} · ${fmt.pct(y.cShare)}`,act:'k:'+y.slot.code,
+    html:()=>`<b>${esc(y.slot.name)}</b><br>가중치 = 매출 비중 ${fmt.pct(y.sShare)} × 50% + 클릭 비중 ${fmt.pct(y.cShare)} × 50% = <b>${fmt.pct(y.w)}</b>`})),q=>fmt.pct(q),['편성 구좌','','가중치','매출·클릭 비중']);
   const months=monthlyTraffic(6);
   document.getElementById('pvTable').innerHTML=`<thead><tr><th>월</th>${PV_TABS.map(t=>`<th class="num">${t}</th>`).join('')}</tr></thead><tbody>${months.map(mo=>`<tr>${td(mo.ym)}${mo.rows.map(y=>td(fmt.cnt(y.avg),1)).join('')}</tr>`).join('')}<tr class="total">${td(esc(periodWord()))}${aggTraffic(r).map(y=>td(fmt.cnt(y.avg),1)).join('')}</tr></tbody>`;
 };

@@ -15,8 +15,8 @@ V.daily=function(){
   const top=s1.rows.slice().sort((a,b)=>b.sales-a.sales)[0],up=sd.filter(z=>z.g>0)[0],dn=sd.filter(z=>z.g<0)[0];const topT=t1.rows.filter(x=>x.wcnt>0).sort((a,b)=>b.sales-a.sales)[0];
   const evs=BANNERS.filter(b=>b.start<=L&&b.end>=L).sort((a,b)=>b.sales-a.sales);const miss=s1.rows.filter(x=>x.clk==null);
   document.getElementById('draft').innerHTML=`<h3>리포트 초안</h3><div class="desc">코드가 산출한 값만 인용합니다</div><ol>
-    <li>기준일 편성 구좌 발생 매출은 <b>${fmt.money(s1.S)}</b>으로 전일 대비 ${deltaHTML(s1.S,s0.S)}, 전주 동요일 대비 ${deltaHTML(s1.S,sw.S)}입니다. 전체 실적 대비 구좌 매출 비중은 ${fmt.pct(s1.S/s1.T)}입니다.</li>
-    <li>매출 상위 구좌는 ${esc(top.slot.name)}(${fmt.money(top.sales)})이며, 가중치 상위 3개 구좌(${s1.rows.slice(0,3).map(x=>esc(x.slot.name)).join(', ')})가 가중치의 ${fmt.pct(s1.rows.slice(0,3).reduce((a,x)=>a+x.w,0))}를 차지합니다.</li>
+    <li>기준일 편성 구좌 발생 매출은 <b>${fmt.money(s1.S)}</b>으로 전일 대비 ${deltaHTML(s1.S,s0.S)}, 전주 동요일 대비 ${deltaHTML(s1.S,sw.S)}입니다. 전체 실적 대비 구좌 매출 비중은 <span class="nw">${fmt.pct(s1.S/s1.T)}입니다</span>.</li>
+    <li>매출 상위 구좌는 ${esc(top.slot.name)}(${fmt.money(top.sales)})이며, 가중치 상위 3개 구좌(${s1.rows.slice(0,3).map(x=>esc(x.slot.name)).join(', ')})가 가중치의 <span class="nw">${fmt.pct(s1.rows.slice(0,3).reduce((a,x)=>a+x.w,0))}를 차지</span>합니다.</li>
     <li>전일 대비 ${up?`가장 늘어난 구좌는 ${esc(up.x.slot.name)}(${deltaHTML(up.x.sales,up.y.sales)})`:'늘어난 구좌가 없고'}, ${dn?`가장 줄어든 구좌는 ${esc(dn.x.slot.name)}(${deltaHTML(dn.x.sales,dn.y.sales)})입니다.`:'줄어든 구좌는 없습니다.'}</li>
     <li>편성 사용량은 ${fmt.n1(t1.W)}건(가중치 반영)으로 활동 팀 ${t1.n}개, 매출 1위 팀은 ${topT?esc(topT.team.name)+' '+fmt.money(topT.sales):'-'}입니다. 기준일 노출 행사 ${fmt.cnt(evs.length)}건 중 1위는 ${evs[0]?esc(evs[0].title)+' ('+esc(evs[0].team)+', '+fmt.money(evs[0].sales)+')':'-'}입니다.</li>
     <li>트래픽: 편성 구좌 클릭 ${fmt.cnt(clk(s1))}건(전일 대비 ${deltaHTML(clk(s1),clk(s0),'cnt')}), DAU ${fmt.cnt(tr1[0].avg)}, 별도탭 PV ${fmt.cnt(tr1[4].avg)}. ${miss.length?miss.map(x=>esc(x.slot.name)).join(', ')+' 구좌는 기준일 클릭 값이 비어 있어 재수신 후 다시 계산합니다.':'클릭 결측 없음.'}</li></ol>
@@ -33,7 +33,7 @@ function act(code){const i=code.indexOf(':');const k=code.slice(0,i),v=code.slic
   if(state.view!=='event'){state.view='event';state.moreE=true;}state.limit=50;render(true);window.scrollTo(0,0);}
 
 function init(){
-  applyTheme();fillFilterOptions();applyHash();
+  applyTheme();applyNav();fillFilterOptions();applyHash();
   document.getElementById('appFoot').textContent=`${META.dataKind} · ${META.baseDate} · ${APP.version}`;
   const on=(id,ev,fn)=>{const e=document.getElementById(id);if(e)e.addEventListener(ev,fn);};
   document.querySelectorAll('.nav button[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;state.limit=50;render(true);window.scrollTo(0,0);}));
@@ -44,7 +44,7 @@ function init(){
   on('fBrand','change',e=>{const v=e.target.value.trim();state.brand=BRAND_LIST.includes(v)?v:'';render();});
   on('fSlot','change',e=>{state.slot=e.target.value;render();});
   on('fQ','input',e=>{state.q=e.target.value.slice(0,40);state.limit=50;render();});
-  on('fReset','click',resetFilters);on('eReset','click',resetFilters);on('btnCopy','click',copyLink);on('btnTheme','click',toggleTheme);
+  on('fReset','click',resetFilters);on('eReset','click',resetFilters);on('btnCopy','click',copyLink);on('btnTheme','click',toggleTheme);on('btnNav','click',toggleNav);
   on('eMore','click',()=>{state.limit+=50;render();});
   const dt=document.getElementById('dimToggle');if(dt){dt.checked=dimOn();dt.addEventListener('change',()=>{try{localStorage.setItem('hubDim',dt.checked?'1':'0');}catch(e){}const ps=document.getElementById('phoneShot');if(ps)ps.classList.toggle('nodim',!dt.checked);});}
   document.addEventListener('click',e=>{const t=e.target;if(!(t instanceof Element))return;

@@ -26,7 +26,7 @@
 <main>
   <div class="head">
     <div><h1 id="pageTitle">편성 요약</h1><div class="sub" id="pageSub"></div><div class="chips" id="chips"></div></div>
-    <div class="actions"><button type="button" class="btn" id="btnCopy" title="지금 보는 화면과 조회 조건이 담긴 링크를 복사합니다">링크 복사</button><button type="button" class="btn primary" id="btnTheme">다크/라이트</button></div>
+    <div class="actions"><button type="button" class="btn navbtn" id="btnNav" aria-pressed="false" title="왼쪽 메뉴를 숨기고 화면을 넓게 봅니다"><i></i><span>메뉴 숨기기</span></button><button type="button" class="btn" id="btnCopy" title="지금 보는 화면과 조회 조건이 담긴 링크를 복사합니다">링크 복사</button><button type="button" class="btn primary" id="btnTheme">다크/라이트</button></div>
   </div>
   <div class="filters" id="filters">
     <div class="f period"><span class="lbl">조회 기간 (시작일 ~ 종료일)</span><div class="row"><input type="date" id="fFrom"><span class="tilde">~</span><input type="date" id="fTo"><div class="presets" id="presets"></div></div></div>
@@ -71,7 +71,7 @@
     <div class="card"><div class="tw"><table class="data" id="slotTable"></table></div>
       <div class="note">편성 구분 "모바일전략"은 모바일전략팀이 편성하는 구좌이고, "자동노출"은 시스템이 자동으로 채우는 영역이라 가중치 산정에서 제외합니다. 가중치 = 구좌 발생 매출 비중 50% + 클릭수 비중 50%, 구좌 매출 비중 = 구좌 발생 매출 ÷ 전체 실적.</div></div>
     <div class="grid2">
-      <div class="card"><h3>구좌별 가중치</h3><div class="desc">굵은 막대 = 선택 기간, 가는 막대 = 비교 기간</div><div class="scrolly"><div class="hbars" id="weightBars"></div></div></div>
+      <div class="card"><h3>구좌별 가중치</h3><div class="desc">굵은 막대 = 선택 기간, 가는 막대 = 비교 기간 · 오른쪽 = 매출 비중 · 클릭 비중</div><div class="scrolly"><div class="hbars" id="weightBars"></div></div></div>
       <div class="card"><h3>주요 탭 PV (일평균)</h3><div class="desc">모바일 편성에서 발생한 트래픽 · 최근 6개월 월별 + 선택 기간</div><div class="tw scrolly"><table class="data" id="pvTable"></table></div></div>
     </div>
   </section>
@@ -163,7 +163,8 @@
 <script src="app-report.js"></script>
 <!--
 변경 이력 (최신이 위)
-[v3.3 / 2026-10-30] 왼쪽 메뉴를 남색 배경(광고 성과 센터와 같은 색 구성)으로 변경. 상단 머리글에서 기준일·가상 데이터 표시를 없애고, 가상 데이터·기준일·버전은 왼쪽 메뉴 맨 아래 한 줄로만 표시 (Master 7차 지시).
+[v3.4 / 2026-10-30] 왼쪽 메뉴 숨기기 버튼 추가(상단 오른쪽, 브라우저에 상태 저장). 한글 단어 중간 줄바꿈 제거, 요약 타일·3종 정보 카드 아래 정렬, BEST 목록 말줄임 해제, 조회 조건 칸 격자 정렬, 구좌 화면 선택 설명 줄바꿈 (Master 8차 지시).
+  [v3.3 / 2026-10-30] 왼쪽 메뉴를 남색 배경(광고 성과 센터와 같은 색 구성)으로 변경. 상단 머리글에서 기준일·가상 데이터 표시를 없애고, 가상 데이터·기준일·버전은 왼쪽 메뉴 맨 아래 한 줄로만 표시 (Master 7차 지시).
   [v3.2 / 2026-10-26] 구좌별 현황을 Hmall 광고 구좌 안내 페이지 양식으로 다시 구성(Master 6차 지시): 휴대폰 틀 없이 캡처 자체를 화면으로, 빨간 점선 구좌 테두리 + 글자 이름표, 화면 그룹 선택·구좌 칩, 결과 카드(지표 8개, 누르면 순위 기준 변경)·사실 표. 캡처 16장을 Master 재업로드 고화질 PNG로 교체하고 구좌 영역 좌표를 픽셀 분석으로 다시 측정.
   [v3.1 / 2026-10-24] 구좌별 현황을 왼쪽 앱 화면 캡처(선택 구좌 밖 흐리게, 글자 라벨) + 오른쪽 화면·구좌 선택과 결과 구성으로 변경 (Master 5차 지시). 구좌 카드 갤러리와 블록식 앱 화면 위치 제거.
   [v3.0 / 2026-10-24] v1 구성으로 복귀 + 고도화 (Master 요청).
